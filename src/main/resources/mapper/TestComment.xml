@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.test.board.mapper.TestCommentMapper">
+	<sql id="TestCommentCols">
+		tc_NUM,
+		tc_CONTENT,
+		tc_WRITER,
+		tc_CREDAT,
+		tc_depth,
+		tc_parent,
+		tb_num
+	</sql>
+	<select id="selectTestCommentList" resultType="tc">
+		select <include refid="TestCommentCols"/> from test_comment
+		<where>
+			<if test='tbNum != null and tbNum != 0'>
+				and tb_num = #{tbNum}
+			</if>
+		</where>
+		start with tc_depth=0
+		connect by prior tc_num=tc_parent
+	</select>
+	<select id="selectTestComment" resultType="tc">
+		select <include refid="TestCommentCols"/> from test_comment
+		where tc_num = #{tcNum}
+	</select>
+	<insert id="insertTestComment" parameterType="tc">
+		insert into test_comment(
+		tc_NUM, tc_CONTENT,tc_WRITER,
+		<if test='tcDepth != null and tcDepth != 0'>
+			tc_depth,
+		</if>
+		<if test='tcParent != null and tcParent != 0'>
+			tc_parent,
+		</if>
+		tb_num
+		)
+		values(
+			seq_tc_num.nextval,  #{tcContent}, #{tcWriter},
+		
+		<if test='tcDepth != null and tcDepth != 0'>
+			#{tcDepth}, 
+		</if>
+		<if test='tcParent != null and tcParent != 0'>
+			#{tcParent}, 
+		</if>
+			#{tbNum}
+		)
+	</insert>
+</mapper>

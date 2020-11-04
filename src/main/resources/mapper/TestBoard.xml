@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.test.board.mapper.TestBoardMapper">
+	<sql id="testBoardCols">
+		TB_NUM,
+		TB_TITLE,
+		TB_CONTENT,
+		TB_WRITER,
+		TB_CREDAT
+	</sql>
+	<select id="selectTestBoardList" resultType="tb">
+		select <include refid="testBoardCols"/> from test_board
+	</select>
+	<select id="selectTestBoard" resultType="tb">
+		select <include refid="testBoardCols"/> from test_board
+		where tb_num = #{tbNum}
+	</select>
+	<insert id="insertTestBoard" parameterType="tb">
+		insert into test_board(
+			tb_num, tb_title, tb_content, tb_writer
+		)
+		values(
+			seq_tb_num.nextval, #{tbTitle}, #{tbContent}, #{tbWriter}
+		)
+	</insert>
+</mapper>

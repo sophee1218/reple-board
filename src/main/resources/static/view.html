@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" type="text/css" href="/jqgrid/css/ui.jqgrid.css"/>
+<script src="/jqgrid/js/jquery-1.7.2.min.js"></script>
+<script src="/jqgrid/js/i18n/grid.locale-kr.js"></script>
+<script src="/jqgrid/js/jquery.jqGrid.min.js"></script>
+</head>
+<body>
+<div class="container">
+	<table class="table " id="tb" border="1">
+	</table>
+	<div>
+		<label for="tcWriter">댓글작성자</label>
+		<input type="text" id="tcWriter"><br>
+		<textarea id="tcContent" cols="33" rows="5"></textarea><br>
+		<button onclick="insertTestBoard()">댓글작성</button>
+	</div>
+	<div>
+		<table class="table" border="1">
+			<tr>
+				<th width="300px">댓글러</th>
+				<th>댓글</th>
+				<th>추가</th>
+			</tr>
+			<tbody id="tbody"></tbody>
+		</table>
+	</div>
+</div>
+<script>
+var tcList;
+function insertTestBoard(tcIdx){
+	var data = {
+			tbNum : localStorage.getItem('tbNum'),
+			tcWriter : $('#tcWriter').val(),
+			tcContent : $('#tcContent').val()
+	};
+	if(tcIdx || tcIdx===0){
+		data = {
+				tbNum : localStorage.getItem('tbNum'),
+				tcWriter : $('#reTcWriter' + tcIdx).val(),
+				tcContent : $('#reTcContent' + tcIdx).val(),
+				tcDepth : tcList[tcIdx].tcDepth+1,
+				tcParent : tcList[tcIdx].tcNum
+		};
+	}
+	$.ajax({
+		url : '/tc/new',
+		type : 'POST',
+		data : JSON.stringify(data),
+		contentType:'application/json;charset=UTF-8',
+		success : function(res){
+			if(res==1){
+				alert('등록 되었습니다.');
+				location.reload();
+			}
+		}
+	});
+}
+$.ajax({
+	url : `/tb/${localStorage.getItem('tbNum')}/tcs`,
+	method : 'GET',
+	success : function(res){
+		console.log(res);
+		var html = '';
+		html += `<tr><th>제목</th><td>${res.tb.tbTitle}</tr>`;
+		html += `<tr><th>내용</th><td>${res.tb.tbContent}</tr>`;
+		html += `<tr><th>작성자</th><td>${res.tb.tbWriter}</tr>`;
+		html += `<tr><th>작성일자</th><td>${res.tb.tbCredat}</tr>`;
+		$('#tb').html(html);
+		html = '';
+		var i=0;
+		tcList = res.tcList;
+		for(var tc of res.tcList){
+			var space='';
+			for(var i=0;i<tc.tcDepth;i++){
+				space +='&nbsp; ';
+			}
+			html += `<tr><td>${space}${tc.tcWriter}</td><td>${tc.tcContent}</td><td><button onclick="showReple('reTr${i}')">댓글</button></tr>`;
+			html += `<tr id="reTr${i}" style="display:none"><td><input type="text" id="reTcWriter${i}"></td><td><textarea id="reTcContent${i}"></textarea></td><td><button onclick="insertTestBoard(${i})">등록</button></tr>`;
+			i++;
+		}
+		$('#tbody').html(html);
+	}
+})
+
+function showReple(trId){
+	$('#'+trId).show();
+}
+</script>
+</body>
+</html>
+
+

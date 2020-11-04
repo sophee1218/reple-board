@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" type="text/css" href="/jqgrid/css/ui.jqgrid.css"/>
+<script src="/jqgrid/js/jquery-1.7.2.min.js"></script>
+<script src="/jqgrid/js/i18n/grid.locale-kr.js"></script>
+<script src="/jqgrid/js/jquery.jqGrid.min.js"></script>
+</head>
+<body>
+<h3>JQGRID EXAM</h3>
+<div class="container">
+	<table id="jqGrid"></table>
+</div>
+<script>
+$(document).ready(function(){
+	$('#jqGrid').jqGrid({
+		datatype:'local',
+		height :300,
+		width : 500,
+		colModel:[
+			{label:'번호',name:'tbNum',width:50,key:true},
+			{label:'제목',name:'tbTitle',width:200},
+			{label:'작성자',name:'tbWriter',width:100},
+			{label:'작성일',name:'tbCredat',width:150}
+		],
+		onSelectRow : function(rowId){
+			localStorage.setItem('tbNum',rowId);
+			location.href='/view.html';
+		}
+	})
+	$.ajax({
+		url:'/tbs',
+		method:'GET',
+		success:function(res){
+			$("#jqGrid").jqGrid('setGridParam', { data: res});
+			$("#jqGrid").trigger('reloadGrid');
+		}
+	})
+	
+})
+</script>
+</body>
+</html>
