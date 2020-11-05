@@ -1,11 +1,11 @@
 package com.test.board.service;
 
-import java.util.List;
-
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.test.board.mapper.TestBoardMapper;
 import com.test.board.mapper.TestCommentMapper;
 import com.test.board.vo.ResultVO;
@@ -20,7 +20,8 @@ public class TestBoardService {
 	@Resource
 	private TestCommentMapper tcMapper;
 	
-	public List<TestBoardVO> selectTestBoardList(TestBoardVO tb){
+	public Page<TestBoardVO> selectTestBoardList(TestBoardVO tb, int pageNum, int pageSize){
+		PageHelper.startPage(pageNum,pageSize);
 		return tbMapper.selectTestBoardList(tb);
 	}
 	
